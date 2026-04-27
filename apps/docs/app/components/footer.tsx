@@ -9,7 +9,7 @@ export function Footer() {
           npm
         </a>
         <a
-          href="https://github.com/your-username/workspace-avatars"
+          href="https://github.com/RobLMartin/workspace-avatars"
           className="hover:text-ink"
         >
           GitHub

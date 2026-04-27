@@ -2,7 +2,7 @@
 
 Monorepo for [`workspace-avatars`](./packages/avatars) and its [docs site](./apps/docs).
 
-## Layout
+## Structure
 
 ```
 .
@@ -15,8 +15,8 @@ Monorepo for [`workspace-avatars`](./packages/avatars) and its [docs site](./app
 ## Getting started
 
 ```bash
-pnpm install
-pnpm dev              # runs the docs site, hot-reloading from the package
+npm install
+npm run dev           # runs the docs site, hot-reloading from the package
 ```
 
 The docs site imports `workspace-avatars` as a workspace dep, so edits
@@ -25,9 +25,9 @@ to `packages/avatars/src` show up live in `apps/docs`.
 ## Building
 
 ```bash
-pnpm build:pkg        # build the npm package only
-pnpm build:docs       # build the docs site only
-pnpm build            # build everything
+npm run build:pkg     # build the npm package only
+npm run build:docs    # build the docs site only
+npm run build         # build everything
 ```
 
 ## Releasing the package
@@ -37,17 +37,17 @@ We use [changesets](https://github.com/changesets/changesets) for versioning.
 ```bash
 # 1. Make changes in packages/avatars
 # 2. Record the change
-pnpm changeset
+npm run changeset
 
 # 3. Bump versions + write changelog
-pnpm version-packages
+npm run version-packages
 
 # 4. Build and publish to npm
-pnpm release
+npm run release
 ```
 
 You'll need to be logged in to npm (`npm login`) and have publish rights to
-the `@workspace` scope.
+the `workspace-avatars` package.
 
 ## Deploying the docs site
 
