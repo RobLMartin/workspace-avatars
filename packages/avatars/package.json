@@ -41,7 +41,7 @@
     "*.css"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && cp src/styles.css dist/styles.css",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build && npm run typecheck"
@@ -50,7 +50,6 @@
     "react": ">=18",
     "react-dom": ">=18"
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
