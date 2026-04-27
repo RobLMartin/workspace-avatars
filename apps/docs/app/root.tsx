@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
 } from "react-router";
 import "./app.css";
+import "workspace-avatars/styles.css";
 import { Footer } from "./components/footer";
 
 export const links = () => [

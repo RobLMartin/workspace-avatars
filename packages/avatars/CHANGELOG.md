@@ -1,5 +1,11 @@
 # workspace-avatars
 
+## 0.1.3
+
+### Patch Changes
+
+- 2771c1f: Fix CSS not being bundled in production deployments
+
 ## 0.1.2
 
 ### Patch Changes
