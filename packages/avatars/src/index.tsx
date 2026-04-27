@@ -1,48 +1,5 @@
 import { useMemo } from "react";
-import { cva } from "class-variance-authority";
-
-// ─── CVA ─────────────────────────────────────────────────────────
-const avatarVariants = cva(
-  "shrink-0 overflow-hidden inline-flex items-center justify-center select-none " +
-    // Active palette vars — light by default, swapped in dark mode.
-    // Inline style provides --avatar-{bg,fg,mid}-{light,dark}; these
-    // utilities just alias one set to the "active" name the SVG uses.
-    "[--avatar-bg:var(--avatar-bg-light)] " +
-    "[--avatar-fg:var(--avatar-fg-light)] " +
-    "[--avatar-mid:var(--avatar-mid-light)] " +
-    "dark:[--avatar-bg:var(--avatar-bg-dark)] " +
-    "dark:[--avatar-fg:var(--avatar-fg-dark)] " +
-    "dark:[--avatar-mid:var(--avatar-mid-dark)]",
-  {
-    variants: {
-      size: {
-        xs: "size-6",
-        sm: "size-8",
-        md: "size-10",
-        lg: "size-14",
-        xl: "size-20",
-        "2xl": "size-32",
-        "3xl": "size-60",
-      },
-    },
-    defaultVariants: { size: "md" },
-  },
-);
-
-const initialsVariants = cva("font-display font-semibold leading-none", {
-  variants: {
-    size: {
-      xs: "text-[10px]",
-      sm: "text-xs",
-      md: "text-sm",
-      lg: "text-xl",
-      xl: "text-2xl",
-      "2xl": "text-4xl",
-      "3xl": "text-6xl",
-    },
-  },
-  defaultVariants: { size: "md" },
-});
+import "./styles.css";
 
 const SIZE_PX: Record<string, number> = {
   xs: 24,
@@ -53,6 +10,16 @@ const SIZE_PX: Record<string, number> = {
   "2xl": 128,
   "3xl": 240,
 };
+
+function getAvatarClassName(size: AvatarSize, extraClassName?: string): string {
+  const baseClass = "workspace-avatar";
+  const sizeClass = `workspace-avatar-${size}`;
+  return [baseClass, sizeClass, extraClassName].filter(Boolean).join(" ");
+}
+
+function getInitialsClassName(size: AvatarSize): string {
+  return `workspace-avatar-initials workspace-avatar-initials-${size}`;
+}
 
 // ─── Types ───────────────────────────────────────────────────────
 type Variant = "pattern" | "initials";
@@ -352,7 +319,7 @@ function CrossStitchSVG({
   const stitchRx = (stitch * config.cellRadius) / 100;
 
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} className="size-full">
+    <svg viewBox={`0 0 ${size} ${size}`} style={{ width: "100%", height: "100%" }}>
       <rect width={size} height={size} fill="var(--avatar-bg)" />
       {pattern.grid.map((row, y) =>
         row.map((on, x) =>
@@ -410,7 +377,7 @@ export function WorkspaceAvatar({
 
   return (
     <div
-      className={avatarVariants({ size, className })}
+      className={getAvatarClassName(size, className)}
       style={{
         ...paletteVars,
         background: variant === "initials" ? "var(--avatar-bg)" : undefined,
@@ -424,7 +391,7 @@ export function WorkspaceAvatar({
     >
       {variant === "initials" ? (
         <span
-          className={initialsVariants({ size })}
+          className={getInitialsClassName(size)}
           style={{ color: "var(--avatar-fg)" }}
         >
           {getInitials(seed)}

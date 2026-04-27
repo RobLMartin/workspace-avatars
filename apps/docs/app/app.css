@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-/* Make Tailwind aware of class strings inside the package's compiled JS */
-@source "../../../packages/avatars/dist";
-@source "../../../packages/avatars/src";
-
 @font-face {
   font-family: "DM Sans";
   font-style: normal;

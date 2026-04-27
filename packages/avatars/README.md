@@ -16,37 +16,11 @@ import { WorkspaceAvatar } from "workspace-avatars";
 <WorkspaceAvatar seed="project-x" config={{ style: "block", containerRadius: 20 }} />
 ```
 
-## Tailwind setup
-
-The component renders Tailwind utility classes. Make sure your Tailwind config scans the package's dist output:
-
-**Tailwind v4** (in your CSS):
-
-```css
-@import "tailwindcss";
-@source "../node_modules/workspace-avatars/dist";
-```
-
-**Tailwind v3** (in `tailwind.config.{js,ts}`):
-
-```js
-content: [
-  "./src/**/*.{ts,tsx}",
-  "./node_modules/workspace-avatars/dist/**/*.{js,cjs}",
-],
-```
+That's it! Styles are included automatically.
 
 ## Dark mode
 
-Theme reactivity uses Tailwind's `dark:` variant. By default that triggers when `.dark` is on a parent. If your app supports OS-preference fallback (a `.system` class plus `prefers-color-scheme: dark`), extend the variant:
-
-```css
-/* Tailwind v4 */
-@custom-variant dark (
-  &:where(.dark, .dark *),
-  &:where(.system, .system *) and (prefers-color-scheme: dark)
-);
-```
+The component automatically switches palettes when a `.dark` class is present on any parent element. Just toggle the class and the avatars update via CSS variables - no re-renders, no JavaScript.
 
 ## Customizing colors
 

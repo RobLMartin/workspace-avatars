@@ -1,0 +1,54 @@
+/* workspace-avatars - Component styles */
+
+/* Base avatar container */
+.workspace-avatar {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+
+  /* CSS variable theming - light mode defaults */
+  --avatar-bg: var(--avatar-bg-light);
+  --avatar-fg: var(--avatar-fg-light);
+  --avatar-mid: var(--avatar-mid-light);
+}
+
+/* Dark mode - swaps to dark palette */
+.dark .workspace-avatar,
+.workspace-avatar:where(.dark, .dark *) {
+  --avatar-bg: var(--avatar-bg-dark);
+  --avatar-fg: var(--avatar-fg-dark);
+  --avatar-mid: var(--avatar-mid-dark);
+}
+
+/* Size variants */
+.workspace-avatar-xs { width: 1.5rem; height: 1.5rem; }
+.workspace-avatar-sm { width: 2rem; height: 2rem; }
+.workspace-avatar-md { width: 2.5rem; height: 2.5rem; }
+.workspace-avatar-lg { width: 3.5rem; height: 3.5rem; }
+.workspace-avatar-xl { width: 5rem; height: 5rem; }
+.workspace-avatar-2xl { width: 8rem; height: 8rem; }
+.workspace-avatar-3xl { width: 15rem; height: 15rem; }
+
+/* SVG fills container */
+.workspace-avatar svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Initials text */
+.workspace-avatar-initials {
+  font-family: var(--font-display, serif);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.workspace-avatar-initials-xs { font-size: 10px; }
+.workspace-avatar-initials-sm { font-size: 0.75rem; }
+.workspace-avatar-initials-md { font-size: 0.875rem; }
+.workspace-avatar-initials-lg { font-size: 1.25rem; }
+.workspace-avatar-initials-xl { font-size: 1.5rem; }
+.workspace-avatar-initials-2xl { font-size: 2.25rem; }
+.workspace-avatar-initials-3xl { font-size: 3.75rem; }
