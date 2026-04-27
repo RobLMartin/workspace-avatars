@@ -1,0 +1,27 @@
+{
+  "name": "workspace-avatars-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "build:pkg": "npm run build -w workspace-avatars",
+    "build:docs": "npm run build -w docs",
+    "dev": "npm run dev -w docs",
+    "dev:pkg": "npm run dev -w workspace-avatars",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build:pkg && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

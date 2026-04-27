@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+/* Make Tailwind aware of class strings inside the package's compiled JS */
+@source "../../../packages/avatars/dist";
+@source "../../../packages/avatars/src";
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: block;
+  src: url("/fonts/dm-sans.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: block;
+  src: url("/fonts/fraunces.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Custom dark variant — matches `.dark` class OR `.system` + OS preference */
+@custom-variant dark {
+  &:where(.dark *, .dark) {
+    @slot;
+  }
+  &:where(.system *, .system) {
+    @media (prefers-color-scheme: dark) {
+      @slot;
+    }
+  }
+}
+
+@theme {
+  --font-display: "Fraunces", serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Fraunces variable font axes */
+  --font-display-variation: "wght" 612, "SOFT" 5, "WONK" 1, "opsz" 27;
+
+  /* Brand palette */
+  --color-sage: #5d8766;
+  --color-violet: #7563b8;
+  --color-amber: #b88a50;
+  --color-coral: #c85d42;
+  --color-slate-acc: #4e5f6e;
+  --color-sky: #3d7db8;
+  --color-cool: #4d76a8;
+
+  /* Legacy aliases */
+  --color-ink: #1a1a1a;
+  --color-paper: #faf9f7;
+  --color-stone: #e8e6e1;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-faint: var(--faint);
+  --color-soft: var(--soft);
+
+  --color-sage-light: var(--sage-light);
+  --color-violet-light: var(--violet-light);
+  --color-amber-light: var(--amber-light);
+  --color-coral-light: var(--coral-light);
+  --color-slate-light: var(--slate-light);
+  --color-sky-light: var(--sky-light);
+  --color-cool-light: var(--cool-light);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* Light mode */
+:root {
+  --radius: 0.625rem;
+
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --border: rgba(0, 0, 0, 0.06);
+  --text: #1a1a1a;
+  --soft: rgba(0, 0, 0, 0.5);
+  --faint: rgba(0, 0, 0, 0.25);
+
+  --sage-light: #e8f0e9;
+  --violet-light: #f0eef8;
+  --amber-light: #faf3eb;
+  --coral-light: #fdf0ed;
+  --slate-light: #eef1f3;
+  --sky-light: #e8f2fb;
+  --cool-light: #e8f0f7;
+
+  --background: #faf9f7;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #1a1a1a;
+  --primary-foreground: #faf9f7;
+  --secondary: #e8e6e1;
+  --secondary-foreground: #1a1a1a;
+  --muted: #e8e6e1;
+  --muted-foreground: #8a8a8a;
+  --accent: rgba(0, 0, 0, 0.02);
+  --accent-foreground: #1a1a1a;
+  --destructive: #c85d42;
+  --input: rgba(0, 0, 0, 0.06);
+  --ring: #5d8766;
+}
+
+/* Dark mode */
+.dark,
+:root[class~="dark"] {
+  --bg: #0e0e10;
+  --surface: #18181b;
+  --border: rgba(255, 255, 255, 0.06);
+  --text: #e8e6e1;
+  --soft: rgba(255, 255, 255, 0.5);
+  --faint: rgba(255, 255, 255, 0.25);
+
+  --sage-light: rgba(124, 154, 130, 0.12);
+  --violet-light: rgba(139, 126, 200, 0.08);
+  --amber-light: rgba(212, 165, 116, 0.12);
+  --coral-light: rgba(224, 122, 95, 0.12);
+  --slate-light: rgba(107, 123, 138, 0.12);
+  --sky-light: rgba(91, 155, 213, 0.12);
+  --cool-light: rgba(108, 148, 196, 0.12);
+
+  --background: #0e0e10;
+  --foreground: #e8e6e1;
+  --card: #18181b;
+  --card-foreground: #e8e6e1;
+  --popover: #18181b;
+  --popover-foreground: #e8e6e1;
+  --primary: #e8e6e1;
+  --primary-foreground: #0e0e10;
+  --secondary: #2a2a2e;
+  --secondary-foreground: #e8e6e1;
+  --muted: #2a2a2e;
+  --muted-foreground: #6a6a70;
+  --accent: rgba(255, 255, 255, 0.04);
+  --accent-foreground: #ffffff;
+  --destructive: #e07a5f;
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #7c9a82;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    @apply transition-colors duration-200;
+  }
+
+  ::placeholder {
+    color: var(--faint);
+  }
+
+  textarea:focus,
+  input:focus,
+  [contenteditable]:focus {
+    outline: none;
+  }
+}
+
+::selection {
+  background: var(--color-sage);
+  color: var(--color-paper);
+}
+
+pre,
+code {
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-variation-settings: var(--font-display-variation);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

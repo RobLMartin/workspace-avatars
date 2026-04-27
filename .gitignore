@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.cache
+.DS_Store
+*.log
+.env
+.env.local
+.vercel
+.react-router
