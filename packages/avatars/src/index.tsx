@@ -11,14 +11,15 @@ const SIZE_PX: Record<string, number> = {
   "3xl": 240,
 };
 
-function getAvatarClassName(size: AvatarSize, extraClassName?: string): string {
+function getAvatarClassName(size?: AvatarSize, extraClassName?: string): string {
   const baseClass = "workspace-avatar";
-  const sizeClass = `workspace-avatar-${size}`;
+  const sizeClass = size ? `workspace-avatar-${size}` : undefined;
   return [baseClass, sizeClass, extraClassName].filter(Boolean).join(" ");
 }
 
-function getInitialsClassName(size: AvatarSize): string {
-  return `workspace-avatar-initials workspace-avatar-initials-${size}`;
+function getInitialsClassName(size?: AvatarSize): string {
+  const sizeClass = size ? `workspace-avatar-initials-${size}` : undefined;
+  return ["workspace-avatar-initials", sizeClass].filter(Boolean).join(" ");
 }
 
 // ─── Types ───────────────────────────────────────────────────────
@@ -27,6 +28,7 @@ type Style = "pixel" | "block" | "quilt";
 
 interface WorkspaceAvatarProps {
   variant?: Variant;
+  size?: AvatarSize;
   config?: PatternConfig;
   className?: string;
   style?: React.CSSProperties;
@@ -261,15 +263,14 @@ interface PatternConfig {
   containerRadius?: number;
 }
 
-const DEFAULT_CONFIG: Required<PatternConfig> = {
-  style: "quilt",
-  stitchShape: "rounded",
+const DEFAULT_CONFIG = {
+  style: "quilt" as Style,
+  stitchShape: "rounded" as const,
   cellRadius: 15,
   padding: 0,
   gap: 10,
   density: 56,
   depth: 30,
-  size: "md",
   border: false,
   containerRadius: 0,
 };
@@ -297,7 +298,7 @@ function CrossStitchSVG({
 }: {
   seed: string;
   size: number;
-  config: Required<PatternConfig>;
+  config: Omit<Required<PatternConfig>, 'size'>;
 }) {
   const h = hash(seed);
 
@@ -344,21 +345,23 @@ function CrossStitchSVG({
 // ─── Component ───────────────────────────────────────────────────
 export function WorkspaceAvatar({
   variant = "pattern",
+  size,
   config,
   className,
   style,
   seed,
 }: WorkspaceAvatarProps) {
-  const mergedConfig = useMemo<Required<PatternConfig>>(
+  const mergedConfig = useMemo(
     () => ({ ...DEFAULT_CONFIG, ...config }),
     [config],
   );
 
-  const size = mergedConfig.size;
+  // Size precedence: explicit prop > config.size > undefined (no fixed size)
+  const finalSize = size ?? config?.size;
   const border = mergedConfig.border;
   const containerRadius = mergedConfig.containerRadius;
 
-  const px = SIZE_PX[size ?? "md"];
+  const px = finalSize ? SIZE_PX[finalSize] : 40; // Default to md (40px) for SVG viewBox
   const pal = useMemo(() => getPalette(seed), [seed]);
   const palIndex = useMemo(() => hash(seed) % PALETTES.length, [seed]);
 
@@ -377,7 +380,7 @@ export function WorkspaceAvatar({
 
   return (
     <div
-      className={getAvatarClassName(size, className)}
+      className={getAvatarClassName(finalSize, className)}
       style={{
         ...paletteVars,
         background: variant === "initials" ? "var(--avatar-bg)" : undefined,
@@ -391,7 +394,7 @@ export function WorkspaceAvatar({
     >
       {variant === "initials" ? (
         <span
-          className={getInitialsClassName(size)}
+          className={getInitialsClassName(finalSize)}
           style={{ color: "var(--avatar-fg)" }}
         >
           {getInitials(seed)}

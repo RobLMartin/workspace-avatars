@@ -1,4 +1,5 @@
 import { WorkspaceAvatar } from "workspace-avatars";
+import "workspace-avatars/styles.css";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router";
 
@@ -545,7 +546,6 @@ export function MyComponent() {
                     gap,
                     padding,
                     depth,
-                    size: "3xl",
                     border,
                     containerRadius,
                   }}

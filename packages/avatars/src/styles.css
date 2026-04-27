@@ -16,8 +16,7 @@
 }
 
 /* Dark mode - swaps to dark palette */
-.dark .workspace-avatar,
-.workspace-avatar:where(.dark, .dark *) {
+.dark .workspace-avatar {
   --avatar-bg: var(--avatar-bg-dark);
   --avatar-fg: var(--avatar-fg-dark);
   --avatar-mid: var(--avatar-mid-dark);
