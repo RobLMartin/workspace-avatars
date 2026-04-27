@@ -1,6 +1,6 @@
 {
   "name": "workspace-avatars",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Deterministic, theme-aware avatars with cross-stitch patterns. Pure CSS variable theming, no JS dark-mode hooks.",
   "keywords": [
     "avatar",

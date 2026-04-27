@@ -15,27 +15,27 @@
   --avatar-mid: var(--avatar-mid-light);
 }
 
-/* Dark mode - swaps to dark palette */
+/* Explicit dark mode */
 .dark .workspace-avatar {
   --avatar-bg: var(--avatar-bg-dark);
   --avatar-fg: var(--avatar-fg-dark);
   --avatar-mid: var(--avatar-mid-dark);
 }
 
-/* System preference dark mode */
+/* System preference dark mode (when no .light or .dark class is present) */
 @media (prefers-color-scheme: dark) {
   .workspace-avatar {
     --avatar-bg: var(--avatar-bg-dark);
     --avatar-fg: var(--avatar-fg-dark);
     --avatar-mid: var(--avatar-mid-dark);
   }
-}
 
-/* Override media query when light mode is explicitly set */
-.light .workspace-avatar {
-  --avatar-bg: var(--avatar-bg-light);
-  --avatar-fg: var(--avatar-fg-light);
-  --avatar-mid: var(--avatar-mid-light);
+  /* Override system dark if .light is explicitly set */
+  .light .workspace-avatar {
+    --avatar-bg: var(--avatar-bg-light);
+    --avatar-fg: var(--avatar-fg-light);
+    --avatar-mid: var(--avatar-mid-light);
+  }
 }
 
 /* Size variants */

@@ -23,12 +23,9 @@ function getInitialsClassName(size?: AvatarSize): string {
 }
 
 // ─── Types ───────────────────────────────────────────────────────
-type Variant = "pattern" | "initials";
-type Style = "pixel" | "block" | "quilt";
+type Style = "pixel" | "block" | "quilt" | "initials";
 
 interface WorkspaceAvatarProps {
-  variant?: Variant;
-  size?: AvatarSize;
   config?: PatternConfig;
   className?: string;
   style?: React.CSSProperties;
@@ -220,7 +217,7 @@ function generateQuilt(rng: () => number, density: number): Pattern {
 }
 
 const GENERATORS: Record<
-  Style,
+  Exclude<Style, "initials">,
   (rng: () => number, density: number) => Pattern
 > = {
   pixel: generatePixel,
@@ -252,14 +249,15 @@ type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 
 interface PatternConfig {
   style?: Style;
+  size?: AvatarSize;
   stitchShape?: "rounded" | "square";
   cellRadius?: number;
   padding?: number;
   gap?: number;
   density?: number;
   depth?: number;
-  size?: AvatarSize;
   border?: boolean;
+  borderWidth?: number;
   containerRadius?: number;
 }
 
@@ -272,6 +270,7 @@ const DEFAULT_CONFIG = {
   density: 56,
   depth: 30,
   border: false,
+  borderWidth: 1,
   containerRadius: 0,
 };
 
@@ -302,11 +301,12 @@ function CrossStitchSVG({
 }) {
   const h = hash(seed);
 
+  const patternStyle = config.style === "initials" ? "quilt" : config.style;
   const variantSalt = { pixel: 0, block: 13371337, quilt: 24682468 }[
-    config.style
+    patternStyle
   ];
   const pRng = prng(h + variantSalt);
-  const pattern = GENERATORS[config.style](pRng, config.density / 100);
+  const pattern = GENERATORS[patternStyle](pRng, config.density / 100);
   const depth = generateDepth(h, pattern.size, config.depth / 100);
 
   const N = pattern.size;
@@ -344,8 +344,6 @@ function CrossStitchSVG({
 
 // ─── Component ───────────────────────────────────────────────────
 export function WorkspaceAvatar({
-  variant = "pattern",
-  size,
   config,
   className,
   style,
@@ -356,9 +354,10 @@ export function WorkspaceAvatar({
     [config],
   );
 
-  // Size precedence: explicit prop > config.size > undefined (no fixed size)
-  const finalSize = size ?? config?.size;
+  const finalSize = mergedConfig.size;
+  const isInitials = mergedConfig.style === "initials";
   const border = mergedConfig.border;
+  const borderWidth = mergedConfig.borderWidth;
   const containerRadius = mergedConfig.containerRadius;
 
   const px = finalSize ? SIZE_PX[finalSize] : 40; // Default to md (40px) for SVG viewBox
@@ -383,16 +382,16 @@ export function WorkspaceAvatar({
       className={getAvatarClassName(finalSize, className)}
       style={{
         ...paletteVars,
-        background: variant === "initials" ? "var(--avatar-bg)" : undefined,
+        background: isInitials ? "var(--avatar-bg)" : undefined,
         border: border
-          ? "1px solid color-mix(in srgb, var(--avatar-fg) 20%, transparent)"
+          ? `${borderWidth}px solid var(--avatar-mid)`
           : undefined,
         borderRadius:
           containerRadius !== undefined ? `${containerRadius}%` : undefined,
         ...style,
       }}
     >
-      {variant === "initials" ? (
+      {isInitials ? (
         <span
           className={getInitialsClassName(finalSize)}
           style={{ color: "var(--avatar-fg)" }}
@@ -406,4 +405,4 @@ export function WorkspaceAvatar({
   );
 }
 
-export type { WorkspaceAvatarProps, PatternConfig, Style, Variant, AvatarSize };
+export type { WorkspaceAvatarProps, PatternConfig, Style, AvatarSize };

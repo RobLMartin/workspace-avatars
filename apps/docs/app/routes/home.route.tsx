@@ -162,7 +162,7 @@ const HERO_WALL = [
   "york",
 ];
 
-type Style = "pixel" | "block" | "quilt";
+type Style = "pixel" | "block" | "quilt" | "initials";
 type Size = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 
 export default function Home() {
@@ -194,6 +194,9 @@ export default function Home() {
   const [containerRadius, setContainerRadius] = useState(
     Number(searchParams.get("containerRadius") || "0"),
   );
+  const [borderWidth, setBorderWidth] = useState(
+    Number(searchParams.get("borderWidth") || "1"),
+  );
 
   // Sync local state when URL params change (e.g., back/forward navigation)
   useEffect(() => {
@@ -205,6 +208,7 @@ export default function Home() {
     const urlContainerRadius = Number(
       searchParams.get("containerRadius") || "0",
     );
+    const urlBorderWidth = Number(searchParams.get("borderWidth") || "1");
 
     setCellRadius(urlCellRadius);
     setDensity(urlDensity);
@@ -212,6 +216,7 @@ export default function Home() {
     setPadding(urlPadding);
     setDepth(urlDepth);
     setContainerRadius(urlContainerRadius);
+    setBorderWidth(urlBorderWidth);
   }, [searchParams]);
 
   // Update URL search params
@@ -265,6 +270,7 @@ export default function Home() {
     setPadding(0);
     setDepth(30);
     setContainerRadius(0);
+    setBorderWidth(1);
 
     // Clear all URL params
     setSearchParams({}, { replace: true, preventScrollReset: true });
@@ -333,6 +339,24 @@ export default function Home() {
     img.src = svgDataUrl;
   }, [seed]);
 
+  // Theme toggle function
+  const toggleTheme = useCallback(() => {
+    const html = document.documentElement;
+    const isDark = html.classList.contains("dark");
+
+    if (isDark) {
+      // Switch to light mode
+      html.classList.remove("dark");
+      html.classList.add("light");
+      localStorage.setItem("theme", "light");
+    } else {
+      // Switch to dark mode
+      html.classList.remove("light");
+      html.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    }
+  }, []);
+
   useEffect(() => {
     setMounted(true);
 
@@ -373,13 +397,13 @@ export default function Home() {
 
 const config = {
   style: "${style}",
+  size: "${size}",
   cellRadius: ${cellRadius},
   density: ${density},
   gap: ${gap},
   padding: ${padding},
-  depth: ${depth},
-  size: "${size}",${border ? "\n        border: true," : ""}${
-    containerRadius > 0 ? `\n        containerRadius: ${containerRadius},` : ""
+  depth: ${depth},${border ? `\n  border: true,\n  borderWidth: ${borderWidth},` : ""}${
+    containerRadius > 0 ? `\n  containerRadius: ${containerRadius},` : ""
   }
 };
 
@@ -440,7 +464,7 @@ export function MyComponent() {
           <SegField
             label="Style"
             value={style}
-            options={["pixel", "block", "quilt"]}
+            options={["pixel", "block", "quilt", "initials"]}
             onChange={(v) => updateParam("style", v)}
           />
 
@@ -476,31 +500,37 @@ export function MyComponent() {
             max={100}
           />
 
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Border">
-              <button
-                onClick={() => updateParam("border", !border)}
-                className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors ${
-                  border
-                    ? "border-text bg-text text-bg"
-                    : "border-border text-soft hover:bg-border"
-                }`}
-              >
-                {border ? "On" : "Off"}
-              </button>
-            </Field>
+          <Field label="Border">
+            <button
+              onClick={() => updateParam("border", !border)}
+              className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors ${
+                border
+                  ? "border-text bg-text text-bg"
+                  : "border-border text-soft hover:bg-border"
+              }`}
+            >
+              {border ? "On" : "Off"}
+            </button>
+          </Field>
 
-            <Field label="Theme">
-              <button
-                onClick={() =>
-                  document.documentElement.classList.toggle("dark")
-                }
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border"
-              >
-                Toggle
-              </button>
-            </Field>
-          </div>
+          {border && (
+            <SliderField
+              label="Border width"
+              value={borderWidth}
+              onChange={(v) => updateSlider("borderWidth", v, setBorderWidth)}
+              min={1}
+              max={10}
+            />
+          )}
+
+          <Field label="Theme">
+            <button
+              onClick={toggleTheme}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border"
+            >
+              Toggle
+            </button>
+          </Field>
 
           <div className="border-t border-border pt-4">
             <button
@@ -547,6 +577,7 @@ export function MyComponent() {
                     padding,
                     depth,
                     border,
+                    borderWidth,
                     containerRadius,
                   }}
                 />
@@ -627,7 +658,7 @@ export function MyComponent() {
               <SegField
                 label="Style"
                 value={style}
-                options={["pixel", "block", "quilt"]}
+                options={["pixel", "block", "quilt", "initials"]}
                 onChange={(v) => updateParam("style", v)}
               />
 
@@ -663,31 +694,37 @@ export function MyComponent() {
                 max={100}
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Border">
-                  <button
-                    onClick={() => updateParam("border", !border)}
-                    className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors ${
-                      border
-                        ? "border-text bg-text text-bg"
-                        : "border-border text-soft hover:bg-border"
-                    }`}
-                  >
-                    {border ? "On" : "Off"}
-                  </button>
-                </Field>
+              <Field label="Border">
+                <button
+                  onClick={() => updateParam("border", !border)}
+                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors ${
+                    border
+                      ? "border-text bg-text text-bg"
+                      : "border-border text-soft hover:bg-border"
+                  }`}
+                >
+                  {border ? "On" : "Off"}
+                </button>
+              </Field>
 
-                <Field label="Theme">
-                  <button
-                    onClick={() =>
-                      document.documentElement.classList.toggle("dark")
-                    }
-                    className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border"
-                  >
-                    Toggle
-                  </button>
-                </Field>
-              </div>
+              {border && (
+                <SliderField
+                  label="Border width"
+                  value={borderWidth}
+                  onChange={(v) => updateSlider("borderWidth", v, setBorderWidth)}
+                  min={1}
+                  max={10}
+                />
+              )}
+
+              <Field label="Theme">
+                <button
+                  onClick={toggleTheme}
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border"
+                >
+                  Toggle
+                </button>
+              </Field>
 
               <div className="border-t border-border pt-4">
                 <button
@@ -711,13 +748,14 @@ export function MyComponent() {
                         seed={seed}
                         config={{
                           style,
+                          size,
                           cellRadius,
                           density,
                           gap,
                           padding,
                           depth,
-                          size,
                           border,
+                          borderWidth,
                           containerRadius,
                         }}
                       />
@@ -749,13 +787,14 @@ export function MyComponent() {
                         seed={exampleSeed}
                         config={{
                           style,
+                          size: "lg",
                           cellRadius,
                           density,
                           gap,
                           padding,
                           depth,
-                          size: "lg",
                           border,
+                          borderWidth,
                           containerRadius,
                         }}
                       />

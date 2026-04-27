@@ -26,16 +26,26 @@ const themeScript = `
   (function() {
     try {
       var stored = localStorage.getItem('theme');
-      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      var isDark = stored === 'dark' || (!stored && prefersDark);
-      if (isDark) document.documentElement.classList.add('dark');
+      if (stored === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (stored === 'light') {
+        document.documentElement.classList.add('light');
+      } else {
+        // No stored preference - system preference will apply via CSS media query
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.add('light');
+        }
+      }
     } catch (e) {}
   })();
 `;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

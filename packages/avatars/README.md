@@ -12,7 +12,7 @@ npm i workspace-avatars
 import { WorkspaceAvatar } from "workspace-avatars";
 
 <WorkspaceAvatar seed="acme-corp" />
-<WorkspaceAvatar seed="jane@example.com" variant="initials" size="lg" />
+<WorkspaceAvatar seed="jane@example.com" config={{ style: "initials", size: "lg" }} />
 <WorkspaceAvatar seed="project-x" config={{ style: "block", containerRadius: 20 }} />
 ```
 
@@ -52,29 +52,28 @@ The component automatically selects a palette by hashing the seed, but you can o
 
 ## Props
 
-| Prop        | Type                                                     | Default     | Description                                   |
-| ----------- | -------------------------------------------------------- | ----------- | --------------------------------------------- |
-| `seed`      | `string`                                                 | required    | Any string — hash drives palette and pattern. |
-| `variant`   | `"pattern" \| "initials"`                                | `"pattern"` | SVG cross-stitch or text initials.            |
-| `size`      | `"xs" \| "sm" \| "md" \| "lg" \| "xl" \| "2xl" \| "3xl"` | `"md"`      | 24px → 240px.                                 |
-| `config`    | `PatternConfig`                                          | —           | Override style, density, gap, padding, etc.   |
-| `className` | `string`                                                 | —           | Forwarded to outer wrapper.                   |
-| `style`     | `React.CSSProperties`                                    | —           | Inline styles forwarded to outer wrapper.     |
+| Prop        | Type                 | Default  | Description                                   |
+| ----------- | -------------------- | -------- | --------------------------------------------- |
+| `seed`      | `string`             | required | Any string — hash drives palette and pattern. |
+| `config`    | `PatternConfig`      | —        | Override style, density, gap, padding, etc.   |
+| `className` | `string`             | —        | Forwarded to outer wrapper.                   |
+| `style`     | `React.CSSProperties`| —        | Inline styles forwarded to outer wrapper.     |
 
 ### PatternConfig
 
-| Field             | Type                            | Default     | Notes                                            |
-| ----------------- | ------------------------------- | ----------- | ------------------------------------------------ |
-| `style`           | `"pixel" \| "block" \| "quilt"` | `"quilt"`   | 8×8 / 10×10 / 9×9 grid.                          |
-| `cellRadius`      | `0–100`                         | `15`        | Cell corner radius (% of cell size).             |
-| `containerRadius` | `0–100`                         | `0`         | Avatar container border-radius (% of size).      |
-| `padding`         | `0–100`                         | `0`         | Outer padding (% of avatar size).                |
-| `gap`             | `0–100`                         | `10`        | Gap between stitches (% of cell).                |
-| `density`         | `0–100`                         | `56`        | Pattern fill density.                            |
-| `depth`           | `0–100`                         | `30`        | Density of secondary mid-tone "depth" thread.    |
-| `size`            | `"xs" \| "sm" \| "md" \| ...`   | `"md"`      | Can be set in config or as component prop.       |
-| `border`          | `boolean`                       | `false`     | Can be set in config or as component prop.       |
-| `stitchShape`     | `"rounded" \| "square"`         | `"rounded"` | Deprecated—use `cellRadius` instead (no effect). |
+| Field             | Type                                                     | Default     | Notes                                            |
+| ----------------- | -------------------------------------------------------- | ----------- | ------------------------------------------------ |
+| `style`           | `"pixel" \| "block" \| "quilt" \| "initials"`            | `"quilt"`   | Pattern type (8×8 / 10×10 / 9×9 grid or text).   |
+| `size`            | `"xs" \| "sm" \| "md" \| "lg" \| "xl" \| "2xl" \| "3xl"` | `undefined` | 24px → 240px. Omit for fluid sizing.             |
+| `cellRadius`      | `0–100`                                                  | `15`        | Cell corner radius (% of cell size).             |
+| `containerRadius` | `0–100`                                                  | `0`         | Avatar container border-radius (% of size).      |
+| `padding`         | `0–100`                                                  | `0`         | Outer padding (% of avatar size).                |
+| `gap`             | `0–100`                                                  | `10`        | Gap between stitches (% of cell).                |
+| `density`         | `0–100`                                                  | `56`        | Pattern fill density.                            |
+| `depth`           | `0–100`                                                  | `30`        | Density of secondary mid-tone "depth" thread.    |
+| `border`          | `boolean`                                                | `false`     | Enable border around avatar.                     |
+| `borderWidth`     | `1–10`                                                   | `1`         | Border width in pixels.                          |
+| `stitchShape`     | `"rounded" \| "square"`                                  | `"rounded"` | Deprecated—use `cellRadius` instead (no effect). |
 
 ## License
 
