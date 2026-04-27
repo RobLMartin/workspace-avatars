@@ -9,7 +9,7 @@ export function meta() {
     {
       name: "description",
       content:
-        "Production-ready avatar component with deterministic patterns, seamless theming, and zero JavaScript dark mode. Built for modern React applications.",
+        "Production-ready avatar component with deterministic patterns and seamless theming. Built for modern React applications.",
     },
   ];
 }
