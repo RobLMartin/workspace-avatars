@@ -8,6 +8,7 @@ export default defineConfig({
   sourcemap: false,
   treeshake: true,
   external: ["react", "react-dom"],
+  injectStyle: true,
   outExtension: ({ format }) => ({
     js: format === "cjs" ? ".cjs" : ".js",
   }),

@@ -22,6 +22,22 @@
   --avatar-mid: var(--avatar-mid-dark);
 }
 
+/* System preference dark mode */
+@media (prefers-color-scheme: dark) {
+  .workspace-avatar {
+    --avatar-bg: var(--avatar-bg-dark);
+    --avatar-fg: var(--avatar-fg-dark);
+    --avatar-mid: var(--avatar-mid-dark);
+  }
+}
+
+/* Override media query when light mode is explicitly set */
+.light .workspace-avatar {
+  --avatar-bg: var(--avatar-bg-light);
+  --avatar-fg: var(--avatar-fg-light);
+  --avatar-mid: var(--avatar-mid-light);
+}
+
 /* Size variants */
 .workspace-avatar-xs { width: 1.5rem; height: 1.5rem; }
 .workspace-avatar-sm { width: 2rem; height: 2rem; }

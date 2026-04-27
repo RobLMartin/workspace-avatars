@@ -1,5 +1,5 @@
 import { WorkspaceAvatar } from "workspace-avatars";
-import "workspace-avatars/styles.css";
+// import "workspace-avatars/styles.css";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router";
 
@@ -733,8 +733,18 @@ export function MyComponent() {
 
                 {/* Example Avatars Grid */}
                 <div className="grid grid-cols-6 gap-4 rounded-2xl border border-border bg-surface p-6">
-                  {["alice", "bruno", "cosima", "dmitri", "elodie", "felix"].map((exampleSeed) => (
-                    <div key={exampleSeed} className="flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity">
+                  {[
+                    "alice",
+                    "bruno",
+                    "cosima",
+                    "dmitri",
+                    "elodie",
+                    "felix",
+                  ].map((exampleSeed) => (
+                    <div
+                      key={exampleSeed}
+                      className="flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity"
+                    >
                       <WorkspaceAvatar
                         seed={exampleSeed}
                         config={{
