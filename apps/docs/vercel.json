@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build -w docs",
-  "outputDirectory": "apps/docs/build/client",
+  "outputDirectory": "build/client",
   "installCommand": "npm install",
   "framework": null,
   "devCommand": "npm run dev -w docs"
