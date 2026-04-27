@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd ../.. && npm run build:pkg && npm run build -w docs",
+  "buildCommand": "cd ../.. && npm install && npm run build:pkg && npm run build -w docs",
   "outputDirectory": "build/client",
-  "installCommand": "cd ../.. && npm install",
+  "installCommand": "npm install --prefix ../..",
   "framework": null,
   "rewrites": [
     {
