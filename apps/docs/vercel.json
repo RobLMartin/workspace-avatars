@@ -1,7 +1,16 @@
 {
   "buildCommand": "npm run build -w docs",
-  "outputDirectory": "build/client",
   "installCommand": "npm install",
   "framework": null,
-  "devCommand": "npm run dev -w docs"
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/server"
+    }
+  ],
+  "functions": {
+    "api/server.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
 }
