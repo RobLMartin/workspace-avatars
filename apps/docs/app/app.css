@@ -35,6 +35,34 @@
   }
 }
 
+/* Custom variant for Radix UI active state */
+@custom-variant data-active {
+  &[data-state="active"] {
+    @slot;
+  }
+}
+
+/* Custom variant for Radix UI checked state */
+@custom-variant data-checked {
+  &[data-state="checked"], &[data-checked] {
+    @slot;
+  }
+}
+
+/* Custom variant for Radix UI unchecked state */
+@custom-variant data-unchecked {
+  &[data-state="unchecked"], &:not([data-checked]) {
+    @slot;
+  }
+}
+
+/* Custom variant for disabled state */
+@custom-variant data-disabled {
+  &[data-disabled], &:disabled {
+    @slot;
+  }
+}
+
 @theme {
   --font-display: "Fraunces", serif;
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif,
