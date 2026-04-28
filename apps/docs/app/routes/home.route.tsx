@@ -1,7 +1,12 @@
 import { WorkspaceAvatar } from "workspace-avatars";
 // import "workspace-avatars/styles.css";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { useSearchParams } from "react-router";
+import { Slider } from "~/components/ui/slider";
+import { Button } from "~/components/ui/button";
+import { Label } from "~/components/ui/label";
+import { Switch } from "~/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export function meta() {
   return [
@@ -174,12 +179,12 @@ export default function Home() {
   const avatarRef = useRef<HTMLDivElement>(null);
 
   // Get non-slider values from URL search params with defaults
-  const seed = searchParams.get("seed") || "workspace-avatars";
   const size: Size = "3xl";
   const style = (searchParams.get("style") || "quilt") as Style;
   const border = searchParams.get("border") === "true";
 
-  // Local state for sliders (instant updates)
+  // Local state for all controls (instant updates)
+  const [seed, setSeed] = useState("workspace-avatars");
   const [cellRadius, setCellRadius] = useState(
     Number(searchParams.get("cellRadius") || "15"),
   );
@@ -199,6 +204,7 @@ export default function Home() {
   );
 
   // Sync local state when URL params change (e.g., back/forward navigation)
+  // Only update if values are actually different to avoid interrupting user input
   useEffect(() => {
     const urlCellRadius = Number(searchParams.get("cellRadius") || "15");
     const urlDensity = Number(searchParams.get("density") || "56");
@@ -210,13 +216,15 @@ export default function Home() {
     );
     const urlBorderWidth = Number(searchParams.get("borderWidth") || "1");
 
-    setCellRadius(urlCellRadius);
-    setDensity(urlDensity);
-    setGap(urlGap);
-    setPadding(urlPadding);
-    setDepth(urlDepth);
-    setContainerRadius(urlContainerRadius);
-    setBorderWidth(urlBorderWidth);
+    if (urlCellRadius !== cellRadius) setCellRadius(urlCellRadius);
+    if (urlDensity !== density) setDensity(urlDensity);
+    if (urlGap !== gap) setGap(urlGap);
+    if (urlPadding !== padding) setPadding(urlPadding);
+    if (urlDepth !== depth) setDepth(urlDepth);
+    if (urlContainerRadius !== containerRadius)
+      setContainerRadius(urlContainerRadius);
+    if (urlBorderWidth !== borderWidth) setBorderWidth(urlBorderWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   // Update URL search params
@@ -241,7 +249,7 @@ export default function Home() {
       key: string,
       value: number,
       setter: (value: number) => void,
-      delay = 300,
+      delay = 500,
     ) => {
       // Update local state immediately for instant UI feedback
       setter(value);
@@ -257,6 +265,48 @@ export default function Home() {
     [updateParam],
   );
 
+  // Memoized slider handlers to prevent re-creating functions
+  const handleCellRadiusChange = useCallback((v: number) => updateSlider("cellRadius", v, setCellRadius), [updateSlider]);
+  const handleContainerRadiusChange = useCallback((v: number) => updateSlider("containerRadius", v, setContainerRadius), [updateSlider]);
+  const handleDensityChange = useCallback((v: number) => updateSlider("density", v, setDensity), [updateSlider]);
+  const handleGapChange = useCallback((v: number) => updateSlider("gap", v, setGap), [updateSlider]);
+  const handlePaddingChange = useCallback((v: number) => updateSlider("padding", v, setPadding), [updateSlider]);
+  const handleDepthChange = useCallback((v: number) => updateSlider("depth", v, setDepth), [updateSlider]);
+  const handleBorderWidthChange = useCallback((v: number) => updateSlider("borderWidth", v, setBorderWidth), [updateSlider]);
+
+  // Memoize avatar config to prevent unnecessary re-renders
+  const avatarConfig = useMemo(
+    () => ({
+      style,
+      cellRadius,
+      density,
+      gap,
+      padding,
+      depth,
+      border,
+      borderWidth,
+      containerRadius,
+    }),
+    [style, cellRadius, density, gap, padding, depth, border, borderWidth, containerRadius]
+  );
+
+  // Memoize example avatars config
+  const exampleConfig = useMemo(
+    () => ({
+      style,
+      size: "lg" as const,
+      cellRadius,
+      density,
+      gap,
+      padding,
+      depth,
+      border,
+      borderWidth,
+      containerRadius,
+    }),
+    [style, cellRadius, density, gap, padding, depth, border, borderWidth, containerRadius]
+  );
+
   // Reset all controls to defaults
   const resetControls = useCallback(() => {
     // Clear all pending debounce timers
@@ -264,6 +314,7 @@ export default function Home() {
     debounceTimers.current = {};
 
     // Reset local state
+    setSeed("workspace-avatars");
     setCellRadius(15);
     setDensity(56);
     setGap(10);
@@ -435,110 +486,120 @@ export function MyComponent() {
         </div>
 
         <div className="mt-6 space-y-6">
+          {/* Seed Input */}
           <Field label="Seed">
             <input
               value={seed}
-              onChange={(e) => updateParam("seed", e.target.value)}
+              onChange={(e) => setSeed(e.target.value)}
               className="w-full rounded-lg border border-border bg-transparent px-3 py-2 font-mono text-sm text-text focus:border-sage focus:outline-none"
             />
           </Field>
 
-          <SliderField
-            label="Cell radius"
-            value={cellRadius}
-            onChange={(v) => updateSlider("cellRadius", v, setCellRadius)}
-            min={0}
-            max={50}
-          />
-
-          <SliderField
-            label="Container radius"
-            value={containerRadius}
-            onChange={(v) =>
-              updateSlider("containerRadius", v, setContainerRadius)
-            }
-            min={0}
-            max={50}
-          />
-
-          <SegField
-            label="Style"
-            value={style}
-            options={["pixel", "block", "quilt", "initials"]}
-            onChange={(v) => updateParam("style", v)}
-          />
-
-          <SliderField
-            label="Density"
-            value={density}
-            onChange={(v) => updateSlider("density", v, setDensity)}
-            min={0}
-            max={100}
-          />
-
-          <SliderField
-            label="Gap"
-            value={gap}
-            onChange={(v) => updateSlider("gap", v, setGap)}
-            min={0}
-            max={50}
-          />
-
-          <SliderField
-            label="Padding"
-            value={padding}
-            onChange={(v) => updateSlider("padding", v, setPadding)}
-            min={0}
-            max={30}
-          />
-
-          <SliderField
-            label="Depth"
-            value={depth}
-            onChange={(v) => updateSlider("depth", v, setDepth)}
-            min={0}
-            max={100}
-          />
-
-          <Field label="Border">
-            <button
-              onClick={() => updateParam("border", !border)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors ${
-                border
-                  ? "border-text bg-text text-bg"
-                  : "border-border text-soft hover:bg-border"
-              }`}
-            >
-              {border ? "On" : "Off"}
-            </button>
+          {/* Style Picker */}
+          <Field label="Style">
+            <Tabs value={style} onValueChange={(v) => updateParam("style", v)}>
+              <TabsList className="w-full">
+                <TabsTrigger value="pixel" className="flex-1">Pixel</TabsTrigger>
+                <TabsTrigger value="block" className="flex-1">Block</TabsTrigger>
+                <TabsTrigger value="quilt" className="flex-1">Quilt</TabsTrigger>
+                <TabsTrigger value="initials" className="flex-1">Initials</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </Field>
 
-          {border && (
+          {/* Cell Properties */}
+          <div className="space-y-4 rounded-lg border border-border p-4">
+            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-soft">
+              Cell Properties
+            </div>
             <SliderField
-              label="Border width"
-              value={borderWidth}
-              onChange={(v) => updateSlider("borderWidth", v, setBorderWidth)}
-              min={1}
-              max={10}
+              label="Radius"
+              value={cellRadius}
+              onChange={handleCellRadiusChange}
+              min={0}
+              max={50}
             />
-          )}
+            <SliderField
+              label="Density"
+              value={density}
+              onChange={handleDensityChange}
+              min={0}
+              max={100}
+            />
+            <SliderField
+              label="Gap"
+              value={gap}
+              onChange={handleGapChange}
+              min={0}
+              max={50}
+            />
+            <SliderField
+              label="Depth"
+              value={depth}
+              onChange={handleDepthChange}
+              min={0}
+              max={100}
+            />
+          </div>
 
-          <Field label="Theme">
-            <button
-              onClick={toggleTheme}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border"
-            >
-              Toggle
-            </button>
-          </Field>
+          {/* Container Properties */}
+          <div className="space-y-4 rounded-lg border border-border p-4">
+            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-soft">
+              Container Properties
+            </div>
+            <SliderField
+              label="Padding"
+              value={padding}
+              onChange={handlePaddingChange}
+              min={0}
+              max={30}
+            />
+            <SliderField
+              label="Radius"
+              value={containerRadius}
+              onChange={handleContainerRadiusChange}
+              min={0}
+              max={50}
+            />
+            <div className="flex items-center justify-between">
+              <Label htmlFor="border-switch" className="text-[10px] uppercase tracking-[0.15em] text-soft">
+                Border
+              </Label>
+              <Switch
+                id="border-switch"
+                checked={border}
+                onCheckedChange={(checked) => updateParam("border", checked)}
+              />
+            </div>
+            {border && (
+              <SliderField
+                label="Width"
+                value={borderWidth}
+                onChange={handleBorderWidthChange}
+                min={1}
+                max={10}
+              />
+            )}
+          </div>
 
-          <div className="border-t border-border pt-4">
-            <button
+          {/* Actions */}
+          <div className="space-y-2 border-t border-border pt-4">
+            <Field label="Theme">
+              <Button
+                onClick={toggleTheme}
+                variant="outline"
+                className="w-full"
+              >
+                Toggle
+              </Button>
+            </Field>
+            <Button
               onClick={resetControls}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border text-soft"
+              variant="outline"
+              className="w-full"
             >
               Reset to Defaults
-            </button>
+            </Button>
           </div>
         </div>
       </aside>
@@ -546,45 +607,11 @@ export function MyComponent() {
       {/* ─── Hero Section with Avatar Wall ─── */}
       <section className="relative min-h-screen overflow-hidden border-b border-border">
         {/* Avatar Wall Background - Full Bleed Grid */}
-        <div
-          className="absolute inset-0 grid"
-          style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
-            gridAutoRows: "100px",
-          }}
-        >
-          {HERO_WALL.map((seed, i) => {
-            const isHighlighted = highlightedCells.has(i);
-            return (
-              <div
-                key={`${seed}-${i}`}
-                className="size-full opacity-20 transition-all hover:opacity-100"
-                style={{
-                  opacity: mounted ? (isHighlighted ? 0.9 : 0.2) : 0,
-                  transform: mounted ? "translateY(0)" : "translateY(20px)",
-                  transitionDelay: mounted ? `${i * 15}ms` : "0ms",
-                  transitionDuration: isHighlighted ? "800ms" : "1200ms",
-                }}
-              >
-                <WorkspaceAvatar
-                  seed={seed}
-                  className="size-full"
-                  config={{
-                    style,
-                    cellRadius,
-                    density,
-                    gap,
-                    padding,
-                    depth,
-                    border,
-                    borderWidth,
-                    containerRadius,
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
+        <AvatarWall
+          mounted={mounted}
+          highlightedCells={highlightedCells}
+          config={avatarConfig}
+        />
 
         {/* Hero Content Overlay */}
         <div className="absolute inset-0 z-10 flex items-center px-6 py-20 md:px-10 xl:pl-100">
@@ -629,110 +656,120 @@ export function MyComponent() {
                 </div>
               </div>
 
+              {/* Seed Input */}
               <Field label="Seed">
                 <input
                   value={seed}
-                  onChange={(e) => updateParam("seed", e.target.value)}
+                  onChange={(e) => setSeed(e.target.value)}
                   className="w-full rounded-lg border border-border bg-transparent px-3 py-2 font-mono text-sm text-text focus:border-sage focus:outline-none"
                 />
               </Field>
 
-              <SliderField
-                label="Cell radius"
-                value={cellRadius}
-                onChange={(v) => updateSlider("cellRadius", v, setCellRadius)}
-                min={0}
-                max={50}
-              />
-
-              <SliderField
-                label="Container radius"
-                value={containerRadius}
-                onChange={(v) =>
-                  updateSlider("containerRadius", v, setContainerRadius)
-                }
-                min={0}
-                max={50}
-              />
-
-              <SegField
-                label="Style"
-                value={style}
-                options={["pixel", "block", "quilt", "initials"]}
-                onChange={(v) => updateParam("style", v)}
-              />
-
-              <SliderField
-                label="Density"
-                value={density}
-                onChange={(v) => updateSlider("density", v, setDensity)}
-                min={0}
-                max={100}
-              />
-
-              <SliderField
-                label="Gap"
-                value={gap}
-                onChange={(v) => updateSlider("gap", v, setGap)}
-                min={0}
-                max={50}
-              />
-
-              <SliderField
-                label="Padding"
-                value={padding}
-                onChange={(v) => updateSlider("padding", v, setPadding)}
-                min={0}
-                max={30}
-              />
-
-              <SliderField
-                label="Depth"
-                value={depth}
-                onChange={(v) => updateSlider("depth", v, setDepth)}
-                min={0}
-                max={100}
-              />
-
-              <Field label="Border">
-                <button
-                  onClick={() => updateParam("border", !border)}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors ${
-                    border
-                      ? "border-text bg-text text-bg"
-                      : "border-border text-soft hover:bg-border"
-                  }`}
-                >
-                  {border ? "On" : "Off"}
-                </button>
+              {/* Style Picker */}
+              <Field label="Style">
+                <Tabs value={style} onValueChange={(v) => updateParam("style", v)}>
+                  <TabsList className="w-full">
+                    <TabsTrigger value="pixel" className="flex-1">Pixel</TabsTrigger>
+                    <TabsTrigger value="block" className="flex-1">Block</TabsTrigger>
+                    <TabsTrigger value="quilt" className="flex-1">Quilt</TabsTrigger>
+                    <TabsTrigger value="initials" className="flex-1">Initials</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </Field>
 
-              {border && (
+              {/* Cell Properties */}
+              <div className="space-y-4 rounded-lg border border-border p-4">
+                <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-soft">
+                  Cell Properties
+                </div>
                 <SliderField
-                  label="Border width"
-                  value={borderWidth}
-                  onChange={(v) => updateSlider("borderWidth", v, setBorderWidth)}
-                  min={1}
-                  max={10}
+                  label="Radius"
+                  value={cellRadius}
+                  onChange={handleCellRadiusChange}
+                  min={0}
+                  max={50}
                 />
-              )}
+                <SliderField
+                  label="Density"
+                  value={density}
+                  onChange={handleDensityChange}
+                  min={0}
+                  max={100}
+                />
+                <SliderField
+                  label="Gap"
+                  value={gap}
+                  onChange={handleGapChange}
+                  min={0}
+                  max={50}
+                />
+                <SliderField
+                  label="Depth"
+                  value={depth}
+                  onChange={handleDepthChange}
+                  min={0}
+                  max={100}
+                />
+              </div>
 
-              <Field label="Theme">
-                <button
-                  onClick={toggleTheme}
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border"
-                >
-                  Toggle
-                </button>
-              </Field>
+              {/* Container Properties */}
+              <div className="space-y-4 rounded-lg border border-border p-4">
+                <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-soft">
+                  Container Properties
+                </div>
+                <SliderField
+                  label="Padding"
+                  value={padding}
+                  onChange={handlePaddingChange}
+                  min={0}
+                  max={30}
+                />
+                <SliderField
+                  label="Radius"
+                  value={containerRadius}
+                  onChange={handleContainerRadiusChange}
+                  min={0}
+                  max={50}
+                />
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="border-switch-mobile" className="text-[10px] uppercase tracking-[0.15em] text-soft">
+                    Border
+                  </Label>
+                  <Switch
+                    id="border-switch-mobile"
+                    checked={border}
+                    onCheckedChange={(checked) => updateParam("border", checked)}
+                  />
+                </div>
+                {border && (
+                  <SliderField
+                    label="Width"
+                    value={borderWidth}
+                    onChange={handleBorderWidthChange}
+                    min={1}
+                    max={10}
+                  />
+                )}
+              </div>
 
-              <div className="border-t border-border pt-4">
-                <button
+              {/* Actions */}
+              <div className="space-y-2 border-t border-border pt-4">
+                <Field label="Theme">
+                  <Button
+                    onClick={toggleTheme}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Toggle
+                  </Button>
+                </Field>
+                <Button
                   onClick={resetControls}
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-border text-soft"
+                  variant="outline"
+                  className="w-full"
                 >
                   Reset to Defaults
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -761,12 +798,14 @@ export function MyComponent() {
                       />
                     </div>
                   </div>
-                  <button
+                  <Button
                     onClick={downloadAvatar}
-                    className="absolute top-4 right-4 rounded-lg bg-text px-3 py-2 text-xs font-medium text-bg opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-90"
+                    variant="default"
+                    size="sm"
+                    className="absolute top-4 right-4 opacity-0 transition-opacity group-hover:opacity-100"
                   >
                     Download PNG
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Example Avatars Grid */}
@@ -785,18 +824,7 @@ export function MyComponent() {
                     >
                       <WorkspaceAvatar
                         seed={exampleSeed}
-                        config={{
-                          style,
-                          size: "lg",
-                          cellRadius,
-                          density,
-                          gap,
-                          padding,
-                          depth,
-                          border,
-                          borderWidth,
-                          containerRadius,
-                        }}
+                        config={exampleConfig}
                       />
                     </div>
                   ))}
@@ -823,8 +851,83 @@ export function MyComponent() {
   );
 }
 
+// Memoized Avatar Wall Component
+const AvatarWall = memo(({
+  mounted,
+  highlightedCells,
+  config
+}: {
+  mounted: boolean;
+  highlightedCells: Set<number>;
+  config: any;
+}) => {
+  return (
+    <div
+      className="absolute inset-0 grid"
+      style={{
+        gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+        gridAutoRows: "100px",
+      }}
+    >
+      {HERO_WALL.map((seed, i) => {
+        const isHighlighted = highlightedCells.has(i);
+        return (
+          <AvatarCell
+            key={`${seed}-${i}`}
+            seed={seed}
+            index={i}
+            mounted={mounted}
+            isHighlighted={isHighlighted}
+            config={config}
+          />
+        );
+      })}
+    </div>
+  );
+});
+
+// Memoized individual avatar cell
+const AvatarCell = memo(({
+  seed,
+  index,
+  mounted,
+  isHighlighted,
+  config
+}: {
+  seed: string;
+  index: number;
+  mounted: boolean;
+  isHighlighted: boolean;
+  config: any;
+}) => {
+  return (
+    <div
+      className="size-full opacity-20 transition-all hover:opacity-100"
+      style={{
+        opacity: mounted ? (isHighlighted ? 0.9 : 0.2) : 0,
+        transform: mounted ? "translateY(0)" : "translateY(20px)",
+        transitionDelay: mounted ? `${index * 15}ms` : "0ms",
+        transitionDuration: isHighlighted ? "800ms" : "1200ms",
+      }}
+    >
+      <WorkspaceAvatar
+        seed={seed}
+        className="size-full"
+        config={config}
+      />
+    </div>
+  );
+}, (prevProps, nextProps) => {
+  // Custom comparison: only re-render if highlighted state or config changes
+  return (
+    prevProps.isHighlighted === nextProps.isHighlighted &&
+    prevProps.mounted === nextProps.mounted &&
+    prevProps.config === nextProps.config
+  );
+});
+
 // Helper Components
-function CopyButton({ text, label }: { text: string; label?: string }) {
+const CopyButton = memo(({ text, label }: { text: string; label?: string }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -834,9 +937,10 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
   };
 
   return (
-    <button
+    <Button
       onClick={handleCopy}
-      className="inline-flex items-center gap-2 rounded-lg bg-text px-3 py-1.5 text-xs font-medium text-bg transition-all hover:opacity-90"
+      variant="default"
+      size="sm"
     >
       {copied ? (
         <>
@@ -873,9 +977,9 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
           {label || "Copy"}
         </>
       )}
-    </button>
+    </Button>
   );
-}
+});
 
 function Field({
   label,
@@ -926,7 +1030,7 @@ function SegField({
   );
 }
 
-function SliderField({
+const SliderField = memo(({
   label,
   value,
   onChange,
@@ -938,17 +1042,26 @@ function SliderField({
   onChange: (v: number) => void;
   min: number;
   max: number;
-}) {
+}) => {
+  const handleChange = useCallback(
+    (values: number[]) => {
+      onChange(values[0]);
+    },
+    [onChange]
+  );
+
   return (
-    <Field label={`${label} · ${value}`}>
-      <input
-        type="range"
+    <div className="space-y-1.5">
+      <Label className="text-[10px] uppercase tracking-[0.15em] text-soft">
+        {label} · {value}
+      </Label>
+      <Slider
         min={min}
         max={max}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-sage"
+        step={1}
+        value={[value]}
+        onValueChange={handleChange}
       />
-    </Field>
+    </div>
   );
-}
+});
