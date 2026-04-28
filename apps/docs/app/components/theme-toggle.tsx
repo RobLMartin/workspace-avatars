@@ -4,10 +4,10 @@ export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // useEffect(() => {
-  //   setMounted(true);
-  //   setIsDark(document.documentElement.classList.contains("dark"));
-  // }, []);
+  useEffect(() => {
+    setMounted(true);
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
 
   function toggle() {
     const next = !isDark;
